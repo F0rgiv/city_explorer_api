@@ -16,15 +16,30 @@ app.use(cors())
 // return location info
 app.get('/location', (request, response) => {
     const locationData = require('./data/location.json')
-    response.send(new Location(locationData))
+    response.send(new Location(locationData[0], request.query.city))
 });
 
+function Location(obj, city) {
+    this.search_query = city,
+    this.formatted_query = obj.display_name,
+    this.latitude = obj.lat,
+    this.longitude = obj.lon
+}
 
-function Location(obj) {
-    this.search_query = "",
-    this.formatted_query = "",
-    this.latitude = "",
-    this.longitude = ""
+//return weather info
+app.get('/weather', (request, response) => {
+    const weatherData = require('./data/weather.json')
+    //list of weather
+    const returnData = []
+    weatherData.data.forEach(day => {
+        returnData.push(new Weather(day))
+    })
+    response.send(returnData);
+});
+
+function Weather(obj) {
+    this.forecast = obj.weather.description,
+    this.time = obj.datetime
 }
 
 //catchall / 404
