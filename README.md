@@ -7,7 +7,11 @@
 The pupose of this api is to surva data to the city explorer web app so that it is usfull to users.
 
 ## Getting Started
-<!-- What are the steps that a user must take in order to build this app on their own machine and get it running? -->
+run
+```
+npm install to install requred dependancies.
+add a env variable PORT with the value you wish teh server to run on.
+```
 
 ## Architecture
 <!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
