@@ -14,7 +14,7 @@ add a env variable PORT with the value you wish teh server to run on.
 ```
 
 ## Architecture
-<!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
+This application uses express to return get requests from https://codefellows.github.io/code-301-guide/curriculum/city-explorer-app/front-end/
 
 ## Change Log
 <!-- Use this area to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an examples:
