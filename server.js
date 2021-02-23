@@ -11,6 +11,7 @@ const superagent = require('superagent')
 
 const PORT = process.env.PORT;
 const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 app.use(cors())
 
 // =============routs===========================================================================================
@@ -24,20 +25,31 @@ function handelLocation(request, response) {
     const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
     //get location data from external api
     superagent.get(url)
-        .then(responce => {
+        .then(result => {
             //return locations if success
-            response.status(200).send(new Location(responce.body[0], cityName))
+            response.status(200).send(new Location(result.body[0], cityName));
         })
         .catch(err => {
-            //return errors if broken
+            // let user know we messed up
+            response.status(500).send("Sorry, something went wrong");
         });
 }
 
 function handelWeather(request, response) {
-    //get location data from file and serve up
-    const weatherData = require('./data/weather.json')
-    //list of weather
-    response.status(200).send(weatherData.data.map(day => new Weather(day)));
+    //get location data from api and serve up
+    const lat = request.query.latitude;
+    const lon = request.query.longitude;
+    const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}`
+    superagent.get(url)
+    .then(result => {
+        console.log(result);
+        //return list of weather
+        response.status(200).send(result.body.data.map(day => new Weather(day)));
+    })
+    .catch(err => {
+        // let user know we messed up
+        response.status(500).send("Sorry, something went very wrong");
+    });
 }
 
 function Location(obj, city) {
