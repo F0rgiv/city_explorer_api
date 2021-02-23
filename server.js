@@ -10,6 +10,7 @@ const superagent = require('superagent')
 //=============app config==============================================================================
 
 const PORT = process.env.PORT;
+const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
 app.use(cors())
 
 // =============routs===========================================================================================
@@ -17,11 +18,19 @@ app.use(cors())
 app.get('/location', handelLocation);
 app.get('/weather', handelWeather);
 
-
 function handelLocation(request, response) {
-    //get location data from external api and return our own solection
-    const locationData = require('./data/location.json')
-    response.status(200).send(new Location(locationData[0], request.query.city))
+    // format our url
+    const cityName = request.query.city;
+    const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
+    //get location data from external api
+    superagent.get(url)
+        .then(responce => {
+            //return locations if success
+            response.status(200).send(new Location(responce.body[0], cityName))
+        })
+        .catch(err => {
+            //return errors if broken
+        });
 }
 
 function handelWeather(request, response) {
@@ -37,14 +46,14 @@ function handelWeather(request, response) {
 
 function Location(obj, city) {
     this.search_query = city,
-    this.formatted_query = obj.display_name,
-    this.latitude = obj.lat,
-    this.longitude = obj.lon
+        this.formatted_query = obj.display_name,
+        this.latitude = obj.lat,
+        this.longitude = obj.lon
 }
 
 function Weather(obj) {
     this.forecast = obj.weather.description,
-    this.time = obj.datetime
+        this.time = obj.datetime
 }
 
 //catchall / 404
