@@ -37,11 +37,7 @@ function handelWeather(request, response) {
     //get location data from file and serve up
     const weatherData = require('./data/weather.json')
     //list of weather
-    const returnData = []
-    weatherData.data.forEach(day => {
-        returnData.push(new Weather(day))
-    })
-    response.status(200).send(returnData);
+    response.status(200).send(weatherData.data.map(day => new Weather(day)));
 }
 
 function Location(obj, city) {
