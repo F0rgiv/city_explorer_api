@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors')
 const app = express();
+const superagent = require('superagent')
 
 //=============app config==============================================================================
 
@@ -18,7 +19,7 @@ app.get('/weather', handelWeather);
 
 
 function handelLocation(request, response) {
-    //get location data from file and serve up
+    //get location data from external api and return our own solection
     const locationData = require('./data/location.json')
     response.status(200).send(new Location(locationData[0], request.query.city))
 }
