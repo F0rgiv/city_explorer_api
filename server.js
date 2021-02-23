@@ -1,22 +1,22 @@
 'use strict';
-//add requrments
+//add requrments===========================================================================================
 
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors')
 const app = express();
 
-//app config
+//app config===========================================================================================
 
 const PORT = process.env.PORT;
 app.use(cors())
 
-// routs
+// routs===========================================================================================
 
 // return location info
 app.get('/location', (request, response) => {
     const locationData = require('./data/location.json')
-    response.send(new Location(locationData[0], request.query.city))
+    response.status(200).send(new Location(locationData[0], request.query.city))
 });
 
 function Location(obj, city) {
@@ -34,7 +34,7 @@ app.get('/weather', (request, response) => {
     weatherData.data.forEach(day => {
         returnData.push(new Weather(day))
     })
-    response.send(returnData);
+    response.status(200).send(returnData);
 });
 
 function Weather(obj) {
@@ -46,6 +46,6 @@ function Weather(obj) {
 
 app.use('*', (request, response) => response.send('Sorry, that route does not exist.'));
 
-//strat app
+//start app===========================================================================================
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
