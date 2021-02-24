@@ -10,11 +10,15 @@ The pupose of this api is to surva data to the city explorer web app so that it 
 run
 ```
 npm install to install requred dependancies.
+
+create a pg db navigate to this project folder and run: ```psql -d lab_08 -f schema.sql```
+
 Ensure you have the local env keys.
 PORT =port
 GEOCODE_API_KEY =<api_key>
 WEATHER_API_KEY =<api_key>
 PARKS_API_KEY =<api_key>
+DATABASE_URL =<postgreSQL connection URL>
 ```
 
 ## Architecture
@@ -45,7 +49,11 @@ This application uses express to return get requests from https://codefellows.gi
     }```
 
 
-02/22/2021 adds park info
+02/22/2021:
+    adds park info
+
+02/23/202:
+    location information is now stored locally so as to cut down on api calls.
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 -->
