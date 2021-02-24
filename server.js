@@ -5,7 +5,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors')
 const app = express();
-const superagent = require('superagent')
+const superagent = require('superagent');
+const pg = require('pg');
 
 // ======================================= app config =======================================
 
@@ -14,6 +15,8 @@ const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const PARKS_API_KEY = process.env.PARKS_API_KEY;
 app.use(cors())
+
+const client = new pg.Client(process.env.DATABASE_URL);
 
 // ======================================= routs =======================================
 
@@ -28,6 +31,7 @@ function getLocation(request, response) {
     // format our url
     const cityName = request.query.city;
     const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
+
     //get location data from external api
     superagent.get(url)
         .then(result => {
@@ -58,7 +62,8 @@ function getWeather(request, response) {
 
 function getParks(request, response) {
     //get park data from api and serve up
-    const cityName = request.query.city;
+    const cityName = request.query.search_query;
+    console.log(request.query.formatted_query)
     const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${cityName}&limit=10`
     superagent.get(url)
         .then(result => {
@@ -75,22 +80,22 @@ function getParks(request, response) {
 
 function Location(obj, city) {
     this.search_query = city,
-    this.formatted_query = obj.display_name,
-    this.latitude = obj.lat,
-    this.longitude = obj.lon
+        this.formatted_query = obj.display_name,
+        this.latitude = obj.lat,
+        this.longitude = obj.lon
 }
 
 function Weather(obj) {
     this.forecast = obj.weather.description,
-    this.time = obj.datetime
+        this.time = obj.datetime
 }
 
 function Park(obj) {
     this.name = obj.fullName,
-    this.address = `${obj.addresses[0].line1} ${obj.addresses[0].city} ${obj.addresses[0].stateCode} ${obj.addresses[0].postalCode}`//"319 Second Ave S." "Seattle" "WA" "98104",
+        this.address = `${obj.addresses[0].line1} ${obj.addresses[0].city} ${obj.addresses[0].stateCode} ${obj.addresses[0].postalCode}`//"319 Second Ave S." "Seattle" "WA" "98104",
     this.fee = obj.entranceFees[0].cost,
-    this.description = obj.description,
-    this.url = obj.url
+        this.description = obj.description,
+        this.url = obj.url
 }
 
 //catchall / 404
@@ -98,4 +103,8 @@ app.use('*', (request, response) => response.send('Sorry, that route does not ex
 
 // ======================================= start app =======================================
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+//connect to db
+client.connect().then(() => {
+    //start server
+    app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+});
