@@ -28,19 +28,44 @@ app.get('/parks', getParks);
 // ======================================= Rout Handelars =======================================
 
 function getLocation(request, response) {
-    // format our url
+    // check sql
     const cityName = request.query.city;
-    const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
+    const sqlSelect = 'SELECT * FROM location WHERE search_query=$1';
+    const sqlArray = [cityName];
 
-    //get location data from external api
-    superagent.get(url)
+    client.query(sqlSelect, sqlArray)
         .then(result => {
-            //return locations if success
-            response.status(200).send(new Location(result.body[0], cityName));
-        })
-        .catch(err => {
-            // let user know we messed up
-            response.status(500).send("Sorry, something went wrong");
+            //return if was in db
+            if (result.rows.length > 0) {
+                response.status(200).send(result.rows[0]);
+            } else {
+                // format our url
+                const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
+
+                // get location data from external api
+                superagent.get(url)
+                    .then(result => {
+                        // Get location data
+                        const location = result.body[0];
+
+                        // save in the db
+                        const sqlInsert = 'INSERT INTO location (search_query, formatted_query, latitude, longitude) VALUES($1, $2, $3, $4)';
+                        const sqlInsertArray = [
+                            cityName,
+                            location.display_name,
+                            parseFloat(location.lat),
+                            parseFloat(location.lon)
+                        ];
+                        client.query(sqlInsert, sqlInsertArray).then(result => {
+                            // return locations if success
+                            response.status(200).send(new Location(location, cityName));
+                        });
+                    })
+                    .catch(err => {
+                        // let user know we messed up
+                        response.status(500).send("Sorry, something went wrong");
+                    });
+            }
         });
 }
 
@@ -63,7 +88,6 @@ function getWeather(request, response) {
 function getParks(request, response) {
     //get park data from api and serve up
     const cityName = request.query.search_query;
-    console.log(request.query.formatted_query)
     const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${cityName}&limit=10`
     superagent.get(url)
         .then(result => {
