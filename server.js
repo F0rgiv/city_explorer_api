@@ -55,9 +55,7 @@ function handelWeather(request, response) {
 
 function handelParks(request, response) {
     //get park data from api and serve up
-    console.log(request.query.formatted_query);
     const state = request.query.formatted_query.split(', ')[2]
-    console.log(state);
     const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${state}&limit=10`
     superagent.get(url)
         .then(result => {
