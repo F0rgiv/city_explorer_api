@@ -1,5 +1,5 @@
 'use strict';
-//=============add requrments===========================================================================================
+// ======================================= add requrments =======================================
 
 require('dotenv').config();
 const express = require('express');
@@ -7,7 +7,7 @@ const cors = require('cors')
 const app = express();
 const superagent = require('superagent')
 
-//=============app config==============================================================================
+// ======================================= app config =======================================
 
 const PORT = process.env.PORT;
 const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
@@ -15,13 +15,16 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const PARKS_API_KEY = process.env.PARKS_API_KEY;
 app.use(cors())
 
-// =============routs===========================================================================================
+// ======================================= routs =======================================
 
-app.get('/location', handelLocation);
-app.get('/weather', handelWeather);
-app.get('/parks', handelParks);
+app.get('/location', getLocation);
+app.get('/weather', getWeather);
+app.get('/parks', getParks);
 
-function handelLocation(request, response) {
+
+// ======================================= Rout Handelars =======================================
+
+function getLocation(request, response) {
     // format our url
     const cityName = request.query.city;
     const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
@@ -37,7 +40,7 @@ function handelLocation(request, response) {
         });
 }
 
-function handelWeather(request, response) {
+function getWeather(request, response) {
     //get location data from api and serve up
     const lat = request.query.latitude;
     const lon = request.query.longitude;
@@ -53,7 +56,7 @@ function handelWeather(request, response) {
         });
 }
 
-function handelParks(request, response) { //TODO do not like this qurie as it's jsut searching the state.
+function getParks(request, response) { //TODO do not like this qurie as it's jsut searching the state.
     //get park data from api and serve up
     const state = request.query.formatted_query.split(', ')[2]
     const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${state}&limit=10`
@@ -67,6 +70,8 @@ function handelParks(request, response) { //TODO do not like this qurie as it's 
             response.status(500).send("Sorry, something went very wrong");
         });
 }
+
+// ======================================= models =======================================
 
 function Location(obj, city) {
     this.search_query = city,
@@ -91,6 +96,6 @@ function Park(obj) {
 //catchall / 404
 app.use('*', (request, response) => response.send('Sorry, that route does not exist.'));
 
-//=============start app===========================================================================================
+// ======================================= start app =======================================
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
