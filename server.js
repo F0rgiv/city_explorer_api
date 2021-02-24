@@ -56,7 +56,7 @@ function getWeather(request, response) {
         });
 }
 
-function getParks(request, response) { //TODO do not like this qurie as it's jsut searching the state.
+function getParks(request, response) {
     //get park data from api and serve up
     const cityName = request.query.city;
     const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${cityName}&limit=10`
