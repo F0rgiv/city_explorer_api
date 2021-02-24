@@ -58,8 +58,8 @@ function getWeather(request, response) {
 
 function getParks(request, response) { //TODO do not like this qurie as it's jsut searching the state.
     //get park data from api and serve up
-    const state = request.query.formatted_query.split(', ')[2]
-    const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${state}&limit=10`
+    const cityName = request.query.city;
+    const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${cityName}&limit=10`
     superagent.get(url)
         .then(result => {
             //return list of weather
