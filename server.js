@@ -27,9 +27,9 @@ app.get('/parks', getParks);
 
 // ======================================= Rout Handelars =======================================
 
-function getLocation(request, response) {
+function getLocation(req, req) {
     // check sql
-    const cityName = request.query.city;
+    const cityName = req.query.city;
     const sqlSelect = 'SELECT * FROM location WHERE search_query=$1';
     const sqlArray = [cityName];
 
@@ -37,7 +37,7 @@ function getLocation(request, response) {
         .then(result => {
             //return if was in db
             if (result.rows.length > 0) {
-                response.status(200).send(result.rows[0]);
+                req.status(200).send(result.rows[0]);
             } else {
                 // format our url
                 const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${cityName}&format=json`;
@@ -58,45 +58,45 @@ function getLocation(request, response) {
                         ];
                         client.query(sqlInsert, sqlInsertArray).then(result => {
                             // return locations if success
-                            response.status(200).send(new Location(location, cityName));
+                            req.status(200).send(new Location(location, cityName));
                         });
                     })
                     .catch(err => {
                         // let user know we messed up
-                        response.status(500).send("Sorry, something went wrong");
+                        req.status(500).send("Sorry, something went wrong");
                     });
             }
         });
 }
 
-function getWeather(request, response) {
+function getWeather(req, req) {
     //get location data from api and serve up
-    const lat = request.query.latitude;
-    const lon = request.query.longitude;
+    const lat = req.query.latitude;
+    const lon = req.query.longitude;
     const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}`
     superagent.get(url)
         .then(result => {
             //return list of weather
-            response.status(200).send(result.body.data.map(day => new Weather(day)));
+            req.status(200).send(result.body.data.map(day => new Weather(day)));
         })
         .catch(err => {
             // let user know we messed up
-            response.status(500).send("Sorry, something went very wrong");
+            req.status(500).send("Sorry, something went very wrong");
         });
 }
 
-function getParks(request, response) {
+function getParks(req, req) {
     //get park data from api and serve up
-    const cityName = request.query.search_query;
+    const cityName = req.query.search_query;
     const url = `https://${PARKS_API_KEY}@developer.nps.gov/api/v1/parks?q=${cityName}&limit=10`
     superagent.get(url)
         .then(result => {
             //return list of weather
-            response.status(200).send(result.body.data.map(park => new Park(park)));
+            req.status(200).send(result.body.data.map(park => new Park(park)));
         })
         .catch(err => {
             // let user know we messed up
-            response.status(500).send("Sorry, something went very wrong");
+            req.status(500).send("Sorry, something went very wrong");
         });
 }
 
