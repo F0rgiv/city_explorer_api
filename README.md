@@ -1,7 +1,7 @@
 # city_explorer_api
 
 **Author**: James Mansour
-**Version**: 1.1.0 (increment the patch/fix version number if you make more commits past your first submission)
+**Version**: 1.3.1 (increment the patch/fix version number if you make more commits past your first submission)
 
 ## Overview
 The pupose of this api is to surva data to the city explorer web app so that it is usfull to users.
@@ -18,6 +18,8 @@ PORT =port
 GEOCODE_API_KEY =<api_key>
 WEATHER_API_KEY =<api_key>
 PARKS_API_KEY =<api_key>
+MOVIE_API_KEY =<api_key>
+YELP_API_KEY =<api_key>
 DATABASE_URL =<postgreSQL connection URL>
 ```
 
@@ -54,6 +56,10 @@ This application uses express to return get requests from https://codefellows.gi
 
 02/23/202:
     location information is now stored locally so as to cut down on api calls.
+
+02/23/202:
+    /yelp has been added
+    /movies has been added
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 -->
